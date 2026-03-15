@@ -4,22 +4,64 @@ Simple project to make it easy to connect to salesforce over node REPL CLI.
 
 For example:
 
-* Start [node repl / command line interface](https://nodejs.org/api/repl.html): `node --experimental-repl-await`
-
-* import the module: `const connector = require('....');`
+* import the module: `const connector = require('....').default;` or with import: `import connector from 'jsr:@darkbluestudios/salesforce-cli-repl'`
 
 * get a connection: `let conn = await connector.getConnection('Some_Salesforce_CLI_Alias');`
 
-* run with gas, because you now have a valid [jsForce connection](https://jsforce.github.io/document/): `const accountDescribe = await conn.describeSObject('Account');`
+* run with gas, because you now have a valid [jsForce connection](https://jsforce.github.io/document/): `const accountDescribe = await connection.describeSObject('Account');`
 
 ## What would I use this for?
 
-Essentially anything you can do with a valid JsForce connection:
+For those interested in Cursor, Clause or Gemini, you now have a programmatic access to the APIs for Salesforce.
+
+And as Jupyter is also supported natively, it becomes very easy to make notebooks that you can repeat for any org.
+
+Things this has been helpful with:
+
+* Identify the number of people within a role hierarchy, and recursively for every role within them.
+* Create a SOQL query that only retrieves "creatable" fields (fields you can use in an insert) from a source org, and upload them to another.
+	* Transform parent IDs on child records, after parents have been inserted
+* You now have programmatic access to an org with the APIs available from [JSForce](https://jsforce.github.io/document/)
+
+
+# Pre-reqsuisites
+
+[Install the Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm)
+
+[Connect the CLI to Salesforce](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm)
+
+Identify the Salesforce Org Alias of the org to connect to, by running the command `sf org list`
+
+(the alias name is used directly by the library when connecting)
+
+
+## Getting Started
+
+```
+import connector from 'jsr:@darkbluestudios/salesforce-cli-repl';
+
+const connection = await connector.getConnection('YOUR_SALESFORCE_ALIAS_FROM_THE_CLI");
+```
+
+thats it. you now have a JSForce connection to your browser.
+
+	Note that passing undefined will use your default connection, or you can run the command `sf org list`to get the aliases available.
+
+You can then get all fields from Account, for example by running the command:
+
+```
+const accountDescribe = await connection.describeSObject('Account');
+const accountFields = accountDescribe.fields;
+```
+
+## What else can you do?
+
+Essentially anything you can do with a valid [JSForce](https://jsforce.github.io/document/) connection:
 
 * You can get all picklist fields:
 
 ```
-let allAccountPicklistFields = (await conn.describeSObject('Account'))
+let allAccountPicklistFields = (await connection.describeSObject('Account'))
 	.fields
 	.filter((f) => f.type === "Picklist");
 //
@@ -33,35 +75,10 @@ let allFields = accountDescribe
 
 ```
 
-* then when you are all set, write the results
-
-```
-// note that the `_` variable in nodejs repl is the last result
-connector.writeFile('./tmp/allFields.json', _ );
-// or explicitly specify the variable to write out
-connector.writeFile('./tmp/allFields.json', allFields);
-```
-
-* or read them back when you're ready
-
-```
-// list files in the tmp directory
-connector.listFiles('./tmp/');
-// ['allFields.json', 'README.md']
-
-// read json
-const allFieldsLoaded = connector.readJSON('./tmp/allFields.json');
-
-// read plain text file
-const readme = connector.readFile('./tmp/README.md');
-```
-
-... 
-
 Alternatively you can list all metadata types available for the org:
 
 ```
-const allMetadataTypes = (await conn.metadata.describe()).metadataObjects;
+const allMetadataTypes = (await connection.metadata.describe()).metadataObjects;
 ```
 
 directoryName                      |inFolder|metaFile|suffix                          |xmlName                              |childXmlNames                                                                                                                                                     
@@ -78,7 +95,7 @@ pages                              |false   |true    |page                      
 OR get the list of the objects for a metadata type
 
 ```
-await conn.metadata.list({ type: 'CustomObject' });
+await connection.metadata.list({ type: 'CustomObject' });
 ```
 
 createdDate             |fileName                                     |fullName                      |id|lastModifiedDate        |type        
@@ -90,6 +107,14 @@ createdDate             |fileName                                     |fullName 
 
 ...
 And other methods available from [JsForce](https://jsforce.github.io/document/)
+
+# NodeJS Await
+
+Note that await is still not available out of the box.
+
+(although it IS available out of the box for Bun and Deno)
+
+If running within NodeJS, (Start [node repl / command line interface](https://nodejs.org/api/repl.html): `node --experimental-repl-await`
 
 # See Also
 

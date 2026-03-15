@@ -1,2 +1,8 @@
 node_modules
 tmp
+bundles
+cov.lcov
+cov_profile
+html_cov
+src/SalesforceCliConnector.js
+docs
