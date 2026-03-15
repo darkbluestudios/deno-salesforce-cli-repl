@@ -35,24 +35,44 @@ Identify the Salesforce Org Alias of the org to connect to, by running the comma
 (the alias name is used directly by the library when connecting)
 
 
-## Getting Started
-
+ ## Getting Started
+ 
 ```
 import connector from 'jsr:@darkbluestudios/salesforce-cli-repl';
-
+ 
 const connection = await connector.getConnection('YOUR_SALESFORCE_ALIAS_FROM_THE_CLI");
 ```
 
 thats it. you now have a JSForce connection to your browser.
 
-	Note that passing undefined will use your default connection, or you can run the command `sf org list`to get the aliases available.
+Note that passing undefined will use your default connection.
+
+If you are unsure what aliases you have available run `connector.list()`
+
+```
+connection.list();
+// [
+//   {
+//     type: "other",
+//     alias: "devHub2",
+//     isDefaultDevHub: false,
+//     isDefault: false
+//   },
+//   {
+//     type: "other",
+//     alias: "utamTest",
+//     isDefaultDevHub: false,
+//     isDefault: false
+//   }
+// ]
+```
 
 You can then get all fields from Account, for example by running the command:
-
-```
-const accountDescribe = await connection.describeSObject('Account');
-const accountFields = accountDescribe.fields;
-```
+ * 
+ * ```
+ * const accountDescribe = await connection.describeSObject('Account');
+ * const accountFields = accountDescribe.fields;
+ * ```
 
 ## What else can you do?
 

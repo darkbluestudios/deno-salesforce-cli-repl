@@ -1,11 +1,14 @@
 {
   "name": "@darkbluestudios/salesforce-cli-repl",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "license": "MIT",
 
   "nodeModulesDir": "auto",
   
-  "exports": "./src/main.ts",
+  "exports": {
+    ".": "./src/main.ts",
+    "./DeveloperError": "./src/DeveloperError.ts"
+  },
   "tasks": {
     "doc": "deno doc --html --output='./docs' -r src",
     "test": "deno test --allow-env --allow-read",
